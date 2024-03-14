@@ -1,0 +1,26 @@
+---
+
+- name: ensure tasks run only on selected os releases
+  block:
+
+    - name: disable selinux
+      ansible.posix.selinux:
+        policy: targeted
+        state: disabled
+
+    - name: configure firewalld
+      ansible.posix.firewalld:
+        service: "{{ item }}"
+        state: enabled
+        permanent: true
+        immediate: true
+        offline: no
+      with_items: "{{ pihole.service }}"
+
+  when: >
+    ansible_distribution == "CentOS" or
+    ansible_distribution == "Fedora" or
+    ansible_distribution == "RedHat" or
+    ansible_distribution == "Rocky"
+
+...
