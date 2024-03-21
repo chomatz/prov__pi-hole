@@ -1,34 +1,38 @@
 ---
 
-pihole:
-  configuration:
-    admin_password: "0243a8434815b3ddeead990d1272d9901341d4cbfbbc0d4f52d972cf1a905aca"
-    default_domain: "home.int"
-    dhcp_start: "10.255.255.0"
-    dhcp_end: "10.255.255.254"
-    dhcp_router: "10.0.0.1"
-    dhcp_lease_duration: 24
-    dhcp_ipv6: "false"
-    dhcp_rapid_commit: "false"
-    dnssec: "false"
-    dns_bogus_priv: "true"
-    dns_fqdn_required: "true"
-    enable_web_server: "true"
-    enable_dhcp_server: "true"
-    install_web_server: "true"
-    install_web_interface: "true"
-    log_dns_queries: "true"
-    pihole_listening_interface: all
-    reverse_lookup: "false"
-    upstream_dns_1: "1.0.0.1"
-    upstream_dns_2: "1.1.1.1"
-  installer:
-    file: /tmp/pi-hole_installer.sh
-    url: "https://install.pi-hole.net"
-  service:
-    - dhcp
-    - dns
-    - http
-    - https
+# defaults
+
+pihole_dnssec: "false"
+pihole_dns_bogus_priv: "true"
+pihole_dns_fqdn_required: "true"
+pihole_enable_dhcp_server: "true"
+pihole_enable_web_server: "true"
+pihole_install_web_server: "true"
+pihole_install_web_interface: "true"
+pihole_log_dns_queries: "true"
+pihole_password: 0243a8434815b3ddeead990d1272d9901341d4cbfbbc0d4f52d972cf1a905aca
+pihole_reverse_lookup: "false"
+pihole_installer:
+  file: /tmp/pi-hole_installer.sh
+  url: "https://install.pi-hole.net"
+pihole_service:
+  - dhcp
+  - dns
+  - http
+  - https
+
+
+# user defined
+
+pihole_default_domain: "home.int"
+pihole_dhcp_start: "10.255.255.0"
+pihole_dhcp_end: "10.255.255.254"
+pihole_dhcp_router: "10.0.0.1"
+pihole_dhcp_lease: 24
+pihole_dhcp_ipv6: "false"
+pihole_dhcp_rapid_commit: "false"
+pihole_upstream_dns_1: "1.0.0.1"
+pihole_upstream_dns_2: "1.1.1.1"
+pihole_static_records: ""
 
 ...
