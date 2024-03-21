@@ -1,0 +1,13 @@
+---
+
+- name: restart pihole
+  ansible.builtin.service:
+    name: pihole-FTL
+    state: restarted
+    enabled: true
+
+- name: activate interface
+  ansible.builtin.command:
+    cmd: "nmcli connection up {{ ansible_default_ipv4.alias }}"
+
+...

@@ -15,7 +15,105 @@
         permanent: true
         immediate: true
         offline: no
-      with_items: "{{ pihole.service }}"
+      with_items: "{{ pihole_service }}"
+
+    - name: check if pi-hole is installed
+      ansible.builtin.stat:
+        path: /usr/local/bin/pihole
+      register: pihole_binary
+
+    - name: skip if pi-hole is already installed
+      block:
+
+        - name: ipv4 retrieval
+          block:
+
+            - name: retrieve ipv4 address
+              ansible.builtin.set_fact:
+                ipv4_address: "{{ (ansible_default_ipv4.address + '/' + ansible_default_ipv4.netmask) | ansible.utils.ipaddr('address/prefix') }}"
+
+            - name: display ipv4 address
+              ansible.builtin.debug:
+                var: ipv4_address
+                verbosity: 1
+
+          when: ansible_default_ipv4.address is defined
+
+        - name: no ipv4 address found
+          ansible.builtin.set_fact:
+            ipv4_address: ""
+          when: ansible_default_ipv4.address is undefined
+
+        - name: ipv6 retrieval
+          block:
+
+            - name: retrieve ipv6 address
+              ansible.builtin.set_fact:
+                ipv6_address: "{{ (ansible_default_ipv6.address + '/' + ansible_default_ipv6.netmask) | ansible.utils.ipaddr('address/prefix') }}"
+
+            - name: display ipv6 address
+              ansible.builtin.debug:
+                var: ipv6_address
+                verbosity: 1
+
+          when: ansible_default_ipv6.address is defined
+
+        - name: no ipv6 address found
+          ansible.builtin.set_fact:
+            ipv6_address: ""
+          when: ansible_default_ipv6.address is undefined
+
+        - name: create pi-hole configuration directory
+          ansible.builtin.file:
+            path: /etc/pihole
+            state: directory
+            mode: "0775"
+
+        - name: upload pi-hole configuration
+          ansible.builtin.template:
+            src: setupVars.conf.j2
+            dest: /etc/pihole/setupVars.conf
+            owner: root
+            group: root
+            mode: "0644"
+
+        - name: download pi-hole installer
+          ansible.builtin.get_url:
+            url: "{{ pihole_installer.url }}"
+            dest: "{{ pihole_installer.file }}"
+            force: true
+            mode: "0750"
+
+        - name: install pi-hole
+          ansible.builtin.shell:
+            cmd: "PIHOLE_SKIP_OS_CHECK=true {{ pihole_installer.file | quote }} --unattended"
+
+      when: not pihole_binary.stat.exists
+
+    - name: configure static dns records
+      ansible.builtin.copy:
+        content: "{{ pihole_static_records }}"
+        dest: /etc/pihole/custom.list
+        owner: root
+        group: root
+        mode: "0644"
+      notify: restart pihole
+
+    - name: configure resolvers
+      community.general.nmcli:
+        conn_name: "{{ ansible_default_ipv4.alias }}"
+        dns4: 127.0.0.1
+        state: present
+      notify: activate interface
+
+    - name: configure log rotation
+      ansible.builtin.copy:
+        src: /etc/pihole/logrotate
+        dest: /etc/logrotate.d/pihole
+        owner: root
+        group: root
+        mode: "0644"
+        remote_src: true
 
   when: >
     ansible_distribution == "CentOS" or
