@@ -1,0 +1,17 @@
+$HTTP["host"] == "{{ inventory_hostname }}" {
+    $HTTP["url"] == "/" {
+        url.redirect = ("" => "/admin/")
+    }
+}
+
+$HTTP["host"] == "{{ inventory_hostname_short }}" {
+    $HTTP["url"] == "/" {
+        url.redirect = ("" => "/admin/")
+    }
+}
+
+$HTTP["host"] == "{{ ansible_default_ipv4.address }}" {
+    $HTTP["url"] == "/" {
+        url.redirect = ("" => "/admin/")
+    }
+}
