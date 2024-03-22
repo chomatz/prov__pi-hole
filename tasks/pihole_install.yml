@@ -90,6 +90,22 @@
 
       when: not pihole_binary.stat.exists
 
+    - name: configure custom redirects
+      ansible.builtin.template:
+        src: redirect.conf.j2
+        dest: /etc/lighttpd/conf.d/redirect.conf
+        owner: root
+        group: root
+        mode: "0644"
+      notify: restart lighttpd
+
+    - name: enable custom redirects
+      ansible.builtin.lineinfile:
+        path: /etc/lighttpd/lighttpd.conf
+        line: include "/etc/lighttpd/conf.d/redirect.conf"
+        state: present
+      notify: restart lighttpd
+
     - name: configure static dns records
       ansible.builtin.copy:
         content: "{{ pihole_static_records }}"
