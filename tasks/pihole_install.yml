@@ -115,7 +115,7 @@
         mode: "0644"
       notify: restart pihole
 
-    - name: configure resolvers
+    - name: configure local resolver
       community.general.nmcli:
         conn_name: "{{ ansible_default_ipv4.alias }}"
         dns4: 127.0.0.1
