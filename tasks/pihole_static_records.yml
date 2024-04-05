@@ -1,0 +1,23 @@
+---
+
+- name: ensure tasks run only on selected os releases
+  block:
+
+    - name: configure static dns records
+      ansible.builtin.copy:
+        content: "{{ pihole_static_records }}"
+        dest: /etc/pihole/custom.list
+        owner: root
+        group: root
+        mode: "0644"
+      notify: restart pihole
+      when:
+        - pihole_static_records is defined
+        - pihole_static_records != ""
+
+  when: >
+    ansible_distribution == "CentOS" or
+    ansible_distribution == "RedHat" or
+    ansible_distribution == "Rocky"
+
+...

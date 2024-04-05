@@ -106,15 +106,6 @@
         state: present
       notify: restart lighttpd
 
-    - name: configure static dns records
-      ansible.builtin.copy:
-        content: "{{ pihole_static_records }}"
-        dest: /etc/pihole/custom.list
-        owner: root
-        group: root
-        mode: "0644"
-      notify: restart pihole
-
     - name: configure local resolver
       community.general.nmcli:
         conn_name: "{{ ansible_default_ipv4.alias }}"
