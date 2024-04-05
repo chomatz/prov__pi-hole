@@ -32,7 +32,7 @@ pihole_upstream_dns_1: "1.0.0.1"
 pihole_upstream_dns_2: "1.1.1.1"
 pihole_static_records: ""
 
-# uncomment or override the following lines if using 2 piholes
+# uncomment or override the following lines if using 2 or more piholes
 #pihole_dhcp_resolvers:
 #  - "192.168.1.2"
 #  - "192.168.1.3"
