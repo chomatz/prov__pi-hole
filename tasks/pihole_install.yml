@@ -122,6 +122,16 @@
         state: present
       notify: activate interface
 
+    - name: configure dhcp resolvers
+      ansible.builtin.template:
+        src: 02-dhcp-extra.conf.j2
+        dest: /etc/dnsmasq.d/02-dhcp-extra.conf
+        owner: root
+        group: root
+        mode: "0644"
+      notify: restart pihole
+      when: pihole_dhcp_resolvers is defined
+
     - name: configure log rotation
       ansible.builtin.copy:
         src: /etc/pihole/logrotate
